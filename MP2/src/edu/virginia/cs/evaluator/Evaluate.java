@@ -1,5 +1,5 @@
 package edu.virginia.cs.evaluator;
-
+import edu.virginia.cs.index.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import edu.virginia.cs.index.similarities.*;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.DefaultSimilarity;
 
@@ -24,14 +25,21 @@ public class Evaluate {
 	 */
 
 	Searcher _searcher = null;
-
 	public static void setSimilarity(Searcher searcher, String method) {
 		if(method == null)
 			return;
+		else if(method.equals("--dp"))
+			searcher.setSimilarity(new DirichletPrior());
+		else if(method.equals("--jm"))
+			searcher.setSimilarity(new JelinekMercer());
 		else if(method.equals("--ok"))
-			searcher.setSimilarity(new BM25Similarity());
+			searcher.setSimilarity(new OkapiBM25());
+		else if(method.equals("--pl"))
+			searcher.setSimilarity(new PivotedLength());
 		else if(method.equals("--tfidf"))
-			searcher.setSimilarity(new DefaultSimilarity());
+			searcher.setSimilarity(new TFIDFDotProduct());
+		else if(method.equals("--bdp"))
+			searcher.setSimilarity(new BooleanDotProduct());
 		else
 		{
 			System.out.println("[Error]Unknown retrieval function specified!");
@@ -40,12 +48,16 @@ public class Evaluate {
 		}
 	}
 
-	public static void printUsage()
-	{
+	public static void printUsage() {
 		System.out.println("To specify a ranking function, make your last argument one of the following:");
+		System.out.println("\t--dp\tDirichlet Prior");
+		System.out.println("\t--jm\tJelinek-Mercer");
 		System.out.println("\t--ok\tOkapi BM25");
+		System.out.println("\t--pl\tPivoted Length Normalization");
 		System.out.println("\t--tfidf\tTFIDF Dot Product");
+		System.out.println("\t--bdp\tBoolean Dot Product");
 	}
+
 
 	//Please implement P@K, MRR and NDCG accordingly
 	public void evaluate(String method, String indexPath, String judgeFile) throws IOException {

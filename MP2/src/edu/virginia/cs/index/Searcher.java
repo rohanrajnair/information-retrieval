@@ -2,10 +2,12 @@ package edu.virginia.cs.index;
 
 import java.io.File;
 import java.io.IOException;
-
+import edu.virginia.cs.index.*;
+import edu.virginia.cs.index.similarities.DirichletPrior;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.BooleanClause;
@@ -21,6 +23,9 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Searcher
 {
@@ -101,11 +106,21 @@ public class Searcher
      * @param numResults
      * @return the SearchResult
      */
+
     private SearchResult runSearch(Query luceneQuery, SearchQuery searchQuery)
     {
         try
         {
-            System.out.println("\nScoring documents with " + indexSearcher.getSimilarity().toString());
+            Similarity sim = indexSearcher.getSimilarity();
+            System.out.println("\nScoring documents with " + sim);
+
+            // have to do this to figure out query length in the LM scorers
+            if(sim instanceof DirichletPrior) {
+                Set<Term> terms = new HashSet<Term>();
+                luceneQuery.extractTerms(terms);
+                ((DirichletPrior) sim).setQueryLength(terms.size());
+            }
+
             TopDocs docs = indexSearcher.search(luceneQuery, searchQuery.fromDoc() + searchQuery.numResults());
             ScoreDoc[] hits = docs.scoreDocs;
             String field = searchQuery.fields().get(0);
