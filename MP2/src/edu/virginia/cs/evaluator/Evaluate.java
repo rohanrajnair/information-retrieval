@@ -169,7 +169,7 @@ public class Evaluate {
 		//your code for computing Normalized Discounted Cumulative Gain here
 		ResultDoc rdoc;
 		//calculate DCG
-		for (i = 1; i <= k, ++i) {
+		for (i = 1; i <= k; ++i) {
 			rdoc = results.get(i-1);
 			if (relDocs.contains(rdoc.title())) dcg += 1 / (Math.log(i+1)/Math.log(2));
 		}

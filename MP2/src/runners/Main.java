@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import edu.virginia.cs.evaluator.Evaluate;
+import edu.virginia.cs.index.Indexer;
 import edu.virginia.cs.index.ResultDoc;
 import edu.virginia.cs.index.SearchResult;
 import edu.virginia.cs.index.Searcher;
@@ -72,7 +73,7 @@ public class Main {
 		public static void main(String[] args) throws IOException {
 		//To crate the index
 		//NOTE: you need to create the index once, and you cannot call this function twice without removing the existing index files
-		//Indexer.index(_prefix + _indexPath, _prefix, _file);
+		Indexer.index(_prefix + _indexPath, _prefix, _file);
 		  
 		//Interactive searching function with your selected ranker
 		//NOTE: you have to create the index before searching!
