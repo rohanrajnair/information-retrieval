@@ -16,7 +16,7 @@ import edu.virginia.cs.index.Searcher;
 public class Evaluate {
 	/**
 	 * Format for judgements.txt is:
-	 * 
+	 *
 	 * line 0: <query 1 text> line 1: <space-delimited list of relevant URLs>
 	 * line 2: <query 2 text> line 3: <space-delimited list of relevant URLs>
 	 * ...
@@ -24,34 +24,34 @@ public class Evaluate {
 	 */
 
 	Searcher _searcher = null;
-	
+
 	public static void setSimilarity(Searcher searcher, String method) {
-        if(method == null)
-            return;
-        else if(method.equals("--ok"))
-            searcher.setSimilarity(new BM25Similarity());       
-        else if(method.equals("--tfidf"))
-            searcher.setSimilarity(new DefaultSimilarity());
-        else
-        {
-            System.out.println("[Error]Unknown retrieval function specified!");
-            printUsage();
-            System.exit(1);
-        }
-    }
-    
-    public static void printUsage()
-    {
-        System.out.println("To specify a ranking function, make your last argument one of the following:");        
-        System.out.println("\t--ok\tOkapi BM25");
-        System.out.println("\t--tfidf\tTFIDF Dot Product");
-    }
-    
+		if(method == null)
+			return;
+		else if(method.equals("--ok"))
+			searcher.setSimilarity(new BM25Similarity());
+		else if(method.equals("--tfidf"))
+			searcher.setSimilarity(new DefaultSimilarity());
+		else
+		{
+			System.out.println("[Error]Unknown retrieval function specified!");
+			printUsage();
+			System.exit(1);
+		}
+	}
+
+	public static void printUsage()
+	{
+		System.out.println("To specify a ranking function, make your last argument one of the following:");
+		System.out.println("\t--ok\tOkapi BM25");
+		System.out.println("\t--tfidf\tTFIDF Dot Product");
+	}
+
 	//Please implement P@K, MRR and NDCG accordingly
-	public void evaluate(String method, String indexPath, String judgeFile) throws IOException {		
-		_searcher = new Searcher(indexPath);		
+	public void evaluate(String method, String indexPath, String judgeFile) throws IOException {
+		_searcher = new Searcher(indexPath);
 		setSimilarity(_searcher, method);
-		
+
 		BufferedReader br = new BufferedReader(new FileReader(judgeFile));
 		String line = null, judgement = null;
 		int k = 10;
@@ -59,7 +59,7 @@ public class Evaluate {
 		double numQueries = 0.0;
 		while ((line = br.readLine()) != null) {
 			judgement = br.readLine();
-			
+
 			//compute corresponding AP
 			meanAvgPrec += AvgPrec(line, judgement);
 			//compute corresponding P@K
@@ -68,7 +68,7 @@ public class Evaluate {
 			mRR += RR(line, judgement);
 			//compute corresponding NDCG
 			nDCG += NDCG(line, judgement, k);
-			
+
 			++numQueries;
 		}
 		br.close();
@@ -93,6 +93,7 @@ public class Evaluate {
 			if (relDocs.contains(rdoc.title())) {
 				//how to accumulate average precision (avgp) when we encounter a relevant document
 				numRel ++;
+				avgp += numRel/i;
 				System.out.print("  ");
 			} else {
 				//how to accumulate average precision (avgp) when we encounter an irrelevant document
@@ -101,31 +102,90 @@ public class Evaluate {
 			System.out.println(i + ". " + rdoc.title());
 			++i;
 		}
-		
+
 		//compute average precision here
-		// avgp = ?
+		if (numRel != 0) avgp = avgp / relDocs.size();
+
 		System.out.println("Average Precision: " + avgp);
 		return avgp;
 	}
-	
+
 	//precision at K
 	double Prec(String query, String docString, int k) {
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.trim().split("\\s+")));
 		double p_k = 0;
+		double numRel = 0;
+		ResultDoc rdoc;
 		//your code for computing precision at K here
+		int i;
+		for (i = 1; i <= k; i++) {
+			rdoc = results.get(i-1);
+			if (relDocs.contains(rdoc.title())) numRel ++;
+		}
+
+		p_k = numRel / (i-1);
 		return p_k;
 	}
-	
+
 	//Reciprocal Rank
 	double RR(String query, String docString) {
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.trim().split("\\s+")));
+		int i = 1;
 		double rr = 0;
+
+		ResultDoc rdoc = results.get(i-1);
 		//your code for computing Reciprocal Rank here
+		while ((!(relDocs.contains(rdoc.title()))) && (i < results.size())) {
+			++i;
+			rdoc = results.get(i-1);
+		}
+
+		if (i == results.size()) rr = 0;
+		else rr = 1.0 / i;
+
 		return rr;
 	}
-	
+
 	//Normalized Discounted Cumulative Gain
 	double NDCG(String query, String docString, int k) {
+		ArrayList<ResultDoc> results = _searcher.search(query).getDocs();
+		if (results.size() == 0)
+			return 0; // no result returned
+
+		HashSet<String> relDocs = new HashSet<String>(Arrays.asList(docString.trim().split("\\s+")));
+		int i, rk = 0, numRel = 0;
+		double dcg = 0;
+		double idcg = 0;
 		double ndcg = 0;
+
 		//your code for computing Normalized Discounted Cumulative Gain here
+		ResultDoc rdoc;
+		//calculate DCG
+		for (i = 1; i <= k, ++i) {
+			rdoc = results.get(i-1);
+			if (relDocs.contains(rdoc.title())) dcg += 1 / (Math.log(i+1)/Math.log(2));
+		}
+
+		//calculate IDCG
+		if (relDocs.size() >= k) rk = k;
+		else rk = relDocs.size();
+
+		int j;
+		for (j = 1; j <= rk; j++) {
+			idcg += 1 / (Math.log(j+1)/Math.log(2));
+		}
+
+		if (idcg != 0) ndcg = dcg / idcg;
+		else ndcg = 0;
+
 		return ndcg;
 	}
 }
