@@ -4,6 +4,7 @@ import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.SimilarityBase;
 
 public class PivotedLength extends SimilarityBase {
+    double s = 0.75;
     /**
      * Returns a score for a single term in the document.
      *
@@ -14,7 +15,11 @@ public class PivotedLength extends SimilarityBase {
      */
     @Override
     protected float score(BasicStats stats, float termFreq, float docLength) {
-        return 0;
+        double tf_num = 1 + Math.log(1 + Math.log(termFreq));
+        double tf_denom = 1 - s + (s * (docLength / stats.getAvgFieldLength()));
+        double idf = Math.log((stats.getNumberOfDocuments() + 1) / stats.getDocFreq());
+
+        return (float) ((tf_num/tf_denom) * idf);
     }
 
     @Override

@@ -2,6 +2,7 @@ package edu.virginia.cs.index.similarities;
 
 import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.SimilarityBase;
+import java.lang.Math;
 
 public class TFIDFDotProduct extends SimilarityBase {
     /**
@@ -13,8 +14,10 @@ public class TFIDFDotProduct extends SimilarityBase {
      * @param docLength
      */
     @Override
-    protected float score(BasicStats stats, float termFreq, float docLength) {
-        return 0;
+    protected float score(BasicStats stats, float termFreq, float docLength){
+        double tf = 1 + Math.log(termFreq);
+        double idf = Math.log((stats.getNumberOfDocuments() + 1)/stats.getDocFreq());
+        return (float) (tf * idf);
     }
 
     @Override

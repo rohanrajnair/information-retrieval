@@ -14,6 +14,9 @@ public class BooleanDotProduct extends SimilarityBase {
      */
     @Override
     protected float score(BasicStats stats, float termFreq, float docLength) {
+        if (termFreq > 0){
+            return 1;
+        }
         return 0;
     }
 

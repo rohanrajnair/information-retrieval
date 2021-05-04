@@ -73,11 +73,11 @@ public class Main {
 		public static void main(String[] args) throws IOException {
 		//To crate the index
 		//NOTE: you need to create the index once, and you cannot call this function twice without removing the existing index files
-		Indexer.index(_prefix + _indexPath, _prefix, _file);
+		//Indexer.index(_prefix + _indexPath, _prefix, _file);
 		  
 		//Interactive searching function with your selected ranker
 		//NOTE: you have to create the index before searching!
-		new Evaluate().evaluate("--ok", _prefix + _indexPath, _prefix + _judgment);;
+		new Evaluate().evaluate("--bdp", _prefix + _indexPath, _prefix + _judgment);
 	}
 
 }

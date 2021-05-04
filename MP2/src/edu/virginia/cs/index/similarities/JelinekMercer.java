@@ -4,7 +4,7 @@ import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.LMSimilarity;
 
 public class JelinekMercer extends LMSimilarity {
-
+    double lambda = 0.1;
     private LMSimilarity.DefaultCollectionModel model; // this would be your reference model
     private float queryLength = 0; // will be set at query time automatically
 
@@ -22,7 +22,12 @@ public class JelinekMercer extends LMSimilarity {
      */
     @Override
     protected float score(BasicStats stats, float termFreq, float docLength) {
-        return 0;
+
+        double collection_lm = model.computeProbability(stats);
+        double p_ml = termFreq / docLength;
+        double smoothed_lm = (1 - lambda) * p_ml + lambda * collection_lm;
+        return (float) (Math.log(smoothed_lm/(lambda * collection_lm)) + queryLength * Math.log(lambda));
+
     }
 
     @Override
