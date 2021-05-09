@@ -85,21 +85,6 @@ public class Evaluate {
 		}
 		br.close();
 
-//		try
-//		{
-//			String filename= "/Users/rohannair/Desktop/dp_map_output.txt";
-//			FileWriter fw = new FileWriter(filename,true); //the true will append the new data
-//			fw.write("\nmu: " + this.mu);
-//			fw.write("\nMAP: " + meanAvgPrec / numQueries);
-//			fw.write("\n");
-//			fw.close();
-//		}
-//		catch(IOException ioe)
-//		{
-//			System.err.println("IOException: " + ioe.getMessage());
-//		}
-
-
 		System.out.println("\nMAP: " + meanAvgPrec / numQueries);//this is the final MAP performance of your selected ranker
 		System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker
 		System.out.println("\nMRR: " + mRR / numQueries);//this is the final MRR performance of your selected ranker
@@ -133,7 +118,7 @@ public class Evaluate {
 		//compute average precision here
 		if (numRel != 0) avgp = avgp / relDocs.size();
 
-		System.out.println("Average Precision: " + avgp);
+		//System.out.println("Average Precision: " + avgp);
 		return avgp;
 	}
 
