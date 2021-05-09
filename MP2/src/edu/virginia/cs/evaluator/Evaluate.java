@@ -1,8 +1,7 @@
 package edu.virginia.cs.evaluator;
 import edu.virginia.cs.index.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -23,6 +22,7 @@ public class Evaluate {
 	 * ...
 	 * Please keep all these constants!
 	 */
+
 
 	Searcher _searcher = null;
 	public static void setSimilarity(Searcher searcher, String method) {
@@ -84,6 +84,21 @@ public class Evaluate {
 			++numQueries;
 		}
 		br.close();
+
+//		try
+//		{
+//			String filename= "/Users/rohannair/Desktop/dp_map_output.txt";
+//			FileWriter fw = new FileWriter(filename,true); //the true will append the new data
+//			fw.write("\nmu: " + this.mu);
+//			fw.write("\nMAP: " + meanAvgPrec / numQueries);
+//			fw.write("\n");
+//			fw.close();
+//		}
+//		catch(IOException ioe)
+//		{
+//			System.err.println("IOException: " + ioe.getMessage());
+//		}
+
 
 		System.out.println("\nMAP: " + meanAvgPrec / numQueries);//this is the final MAP performance of your selected ranker
 		System.out.println("\nP@" + k + ": " + p_k / numQueries);//this is the final P@K performance of your selected ranker

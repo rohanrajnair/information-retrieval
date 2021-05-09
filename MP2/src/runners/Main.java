@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import edu.virginia.cs.evaluator.Evaluate;
 import edu.virginia.cs.index.Indexer;
@@ -77,7 +79,9 @@ public class Main {
 		  
 		//Interactive searching function with your selected ranker
 		//NOTE: you have to create the index before searching!
-		new Evaluate().evaluate("--bdp", _prefix + _indexPath, _prefix + _judgment);
+
+            new Evaluate().evaluate("--dp", _prefix + _indexPath, _prefix + _judgment);
+
 	}
 
 }

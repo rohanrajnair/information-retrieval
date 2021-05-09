@@ -4,9 +4,10 @@ import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.SimilarityBase;
 import java.lang.Math;
 public class OkapiBM25 extends SimilarityBase {
-    double k1 = 1.5;
-    double k2 = 750;
-    double b = 1.0;
+    double k1 = 1.2;
+    double k2 = 1.0;
+    double b = 0.75;
+
     /**
      * Returns a score for a single term in the document.
      *

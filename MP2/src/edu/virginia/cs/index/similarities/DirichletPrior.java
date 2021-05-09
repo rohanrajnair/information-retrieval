@@ -4,13 +4,11 @@ import org.apache.lucene.search.similarities.BasicStats;
 import org.apache.lucene.search.similarities.LMSimilarity;
 
 public class DirichletPrior extends LMSimilarity {
-    double mu = 2500;
+    double mu = 2000;
     private LMSimilarity.DefaultCollectionModel model; // this would be your reference model
     private float queryLength = 0; // will be set at query time automatically
 
-    public DirichletPrior() {
-        model = new LMSimilarity.DefaultCollectionModel();
-    }
+    public DirichletPrior() { model = new LMSimilarity.DefaultCollectionModel(); }
 
     /**
      * Returns a score for a single term in the document.
